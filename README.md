@@ -61,25 +61,215 @@ The original [karpathy/llm-council](https://github.com/karpathy/llm-council) was
 - **Enhanced Stage 3 (Chairman Opinion)** — The chairman now outputs a structured ethics review document with explicit `overall_conclusion`, `domain_assessments`, `cross_domain_findings`, `unresolved_divergences`, and `priority_actions` (P0 = must fix, P1 = strongly recommended, P2 = suggested). This is actionable for real IRB/ethics committees rather than just a readable summary.
 - **Preset Packages** — Experts, review dimensions, regulatory knowledge, trigger conditions, and cross-domain templates are all packaged as reusable YAML presets. You don't need to re-engineer prompts for every new project type.
 
-### Quick Start
+---
 
+## Complete Usage Guide
+
+### 1. Installation
+
+**Python dependencies**
 ```bash
-# Install Python deps
-pip install pyyaml jinja2 pydantic
-
-# Run smoke tests (no API key needed)
-python3 tests/test_smoke.py
-
-# CLI review
-python3 main.py examples/example_project_genomics.json --preset life-sciences
-
-# Web app
-pip install fastapi uvicorn
-cd frontend && npm install && cd ..
-./start.sh   # backend :8001, frontend :5173
+pip install pyyaml jinja2 pydantic fastapi uvicorn httpx
 ```
 
-### Presets
+For real LLM providers, install the corresponding SDK:
+```bash
+# Anthropic
+pip install anthropic
+
+# OpenAI or OpenAI-compatible services
+pip install openai
+```
+
+**Frontend dependencies**
+```bash
+cd frontend && npm install && cd ..
+```
+
+### 2. Configuration (Stub vs Real LLM)
+
+By default the system runs in **stub mode** (offline, no API key, deterministic fake outputs). This is great for testing and CI.
+
+To switch to **real LLMs**, you have two options:
+
+#### Option A: Edit `config/defaults.yaml`
+Change `models.api_provider` to one of: `openrouter`, `anthropic`, `openai_compatible`.
+
+```yaml
+models:
+  api_provider: "openrouter"   # or anthropic / openai_compatible
+  router_model: "anthropic/claude-opus-4-6"
+  chairman_model: "anthropic/claude-opus-4-6"
+  default_review_models:
+    - "anthropic/claude-sonnet-4-6"
+    - "openai/gpt-5.1"
+```
+
+#### Option B: Environment variable override
+```bash
+export ETHICS_COUNCIL_LLM=stub      # force stub
+export ETHICS_COUNCIL_LLM=real      # use whatever is in config
+```
+
+#### API Keys
+Create a `.env` file in the project root (or export in your shell):
+
+```bash
+# OpenRouter
+OPENROUTER_API_KEY=sk-or-v1-...
+
+# Anthropic
+ANTHROPIC_API_KEY=sk-ant-...
+
+# OpenAI / OpenAI-compatible
+OPENAI_API_KEY=sk-...
+OPENAI_BASE_URL=https://api.openai.com/v1   # optional, for custom endpoints
+```
+
+### 3. Run the Web Application
+
+```bash
+./start.sh
+```
+
+This starts:
+- Backend at http://localhost:8001
+- Frontend at http://localhost:5173
+
+**Usage flow in the UI:**
+1. **Submit Project** — Fill in the structured form (title, PI, description, methodology, and flags like "involves human subjects").
+2. **Expert Selection** — Review the Stage 0 routing results. See which experts were selected, why, and the proposed cross-domain clusters. You can manually toggle expert selection before confirming.
+3. **Review Progress** — Watch the real-time SSE stream as Stage 1-3 run. Each expert's cross-validation and each cluster's discussion are shown with expandable details.
+4. **Final Report** — View the chairman's structured opinion, download the full JSON, or inspect the raw deliberation log.
+
+### 4. Use the REST API
+
+All endpoints return JSON. Storage is local JSON files in `data/reviews/`.
+
+#### List presets
+```bash
+curl http://localhost:8001/api/presets
+```
+
+#### Submit a project (runs Stage 0 routing)
+```bash
+curl -X POST http://localhost:8001/api/reviews \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_material": {
+      "project_title": "CRISPR Gene Therapy Preclinical Study",
+      "principal_investigator": "Dr. Zhang",
+      "research_description": "Using CRISPR-Cas9 to treat sickle cell disease in mouse models.",
+      "methodology": " Lentiviral delivery of CRISPR components into hematopoietic stem cells.",
+      "involves_gene_editing": true,
+      "involves_animals": true
+    },
+    "preset": "life-sciences"
+  }'
+```
+Response includes `review_id` and the `_routing` result.
+
+#### Confirm and run full review (sync)
+```bash
+curl -X POST http://localhost:8001/api/reviews/{review_id}/confirm \
+  -H "Content-Type: application/json" \
+  -d '{
+    "experts_selected": [{"id": "gene_editing", "name": "...", "reason": "..."}],
+    "context_clusters": [{"topic": "...", "participants": ["..."], "reason": "..."}]
+  }'
+```
+
+#### Confirm and run full review (SSE streaming)
+```bash
+curl -X POST http://localhost:8001/api/reviews/{review_id}/confirm/stream \
+  -H "Content-Type: application/json" \
+  -d '{
+    "experts_selected": [...],
+    "context_clusters": [...]
+  }'
+```
+Events are streamed as `data: {...}\n\n` lines.
+
+#### List all reviews
+```bash
+curl http://localhost:8001/api/reviews
+```
+
+#### Get a single review
+```bash
+curl http://localhost:8001/api/reviews/{review_id}
+```
+
+#### Delete a review
+```bash
+curl -X DELETE http://localhost:8001/api/reviews/{review_id}
+```
+
+### 5. Use the CLI
+
+```bash
+# Stub mode (default)
+python3 main.py examples/example_project_genomics.json --preset life-sciences
+
+# Real LLM via OpenRouter
+export OPENROUTER_API_KEY=sk-or-v1-...
+python3 main.py examples/example_project_genomics.json --preset life-sciences --provider openrouter
+
+# Save output to file
+python3 main.py examples/example_project_genomics.json --preset ai-ethics -o result.json
+```
+
+### 6. Interpreting the Output
+
+The final JSON contains:
+
+| Field | Meaning |
+|-------|---------|
+| `project_name` | Project title extracted from input |
+| `risk_level` | `standard` / `elevated` / `high` |
+| `overall_conclusion` | `approved` / `conditional` / `rejected` |
+| `conclusion_rationale` | Human-readable reasoning for the conclusion |
+| `domain_assessments` | Array of per-domain evaluations with key risks and recommendations |
+| `cross_domain_findings` | Risks that emerge only at the intersection of multiple domains |
+| `unresolved_divergences` | Disagreements between domains that the chairman notes but does not override |
+| `priority_actions` | Actionable items tagged P0 (must fix), P1 (strongly recommended), P2 (suggested) |
+| `chairman_notes` | Free-form executive summary from the chairman |
+| `_deliberation_log` | Full raw outputs from Stage 1 and Stage 2 for auditability |
+| `_routing` | Stage 0 output: which experts were selected and why |
+
+### 7. Adding a Custom Preset or Expert
+
+**Add a new preset folder:**
+```
+presets/my-domain/
+├── preset.yaml
+├── experts/
+│   ├── expert_a.yaml
+│   └── expert_b.yaml
+└── cross_domain_templates.yaml
+```
+
+Copy any existing preset (e.g. `ai-ethics`) as a template and modify:
+- `experts/*.yaml` — define the expert's review dimensions, regulatory knowledge, trigger conditions, and `system_prompt`
+- `cross_domain_templates.yaml` — define which experts should discuss cross-domain topics together
+- `preset.yaml` — metadata and the list of expert files to load
+
+No code changes are required. The preset will appear automatically in `/api/presets` and the CLI/UI.
+
+### 8. Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `NotImplementedError` from LLM client | Make sure you installed the right SDK (`anthropic` or `openai`) and set the API key. |
+| Stub always returns fake JSON even with provider set | Check if `ETHICS_COUNCIL_LLM=stub` is exported in your environment. Unset it. |
+| Backend says preset not found | Verify `presets_dir` path. Presets must contain `preset.yaml` and at least one expert YAML. |
+| Frontend can't connect to backend | Check CORS origins in `backend/main.py` and ensure backend is running on port 8001. |
+| JSON parse errors from real LLM | Lower `temperature` in config (0.2-0.3). Some models are more reliable with structured JSON at low temp. |
+| Stage 3 misdetected in stub mode | This was fixed. If you see it on a custom branch, ensure Stage 3 is checked first in `engine/llm_client.py` because it embeds earlier-stage JSON. |
+
+---
+
+## Presets
 
 | Preset | Domain | Experts | Typical Use Case |
 |--------|--------|---------|------------------|
@@ -88,7 +278,7 @@ cd frontend && npm install && cd ..
 | `social-science` | Social Science | 6 | Surveys, vulnerable populations |
 | `clinical-trial` | Clinical Trial | 6 | Drug trials, medical devices |
 
-### Tech Stack
+## Tech Stack
 
 - **Engine**: Python 3.10+, asyncio, Pydantic v2, Jinja2
 - **Backend**: FastAPI, Server-Sent Events (SSE)
@@ -149,27 +339,213 @@ Stage 3: 主席综合 — 汇总所有域内摘要与跨域讨论结果
 - **强化 Stage 3（主席意见书）** — 主席不再只是生成一段可读摘要，而是输出结构化的伦理审查文档：明确给出 `overall_conclusion`（整体结论）、`domain_assessments`（各领域评估）、`cross_domain_findings`（跨域发现）、`unresolved_divergences`（未解决分歧）以及 `priority_actions`（P0=必须修改否则不通过；P1=强烈建议；P2=建议）。这对真实的 IRB / 伦理委员会而言是可落地的。
 - **领域预设包** — 专家定义、审查维度、法规知识、触发条件、跨域模板全部打包为可复用的 YAML 预设。无需为每个新项目重新设计 prompt。
 
-### 快速开始
+---
 
+## 完整使用教程
+
+### 1. 安装依赖
+
+**Python 依赖**
 ```bash
-# 安装 Python 依赖
-pip install pyyaml jinja2 pydantic
-
-# 运行冒烟测试（无需 API Key）
-python3 tests/test_smoke.py
-
-# CLI 运行审查
-python3 main.py examples/example_project_genomics.json --preset life-sciences
-
-# Web 应用
-pip install fastapi uvicorn
-cd frontend && npm install && cd ..
-./start.sh   # 后端 :8001，前端 :5173
+pip install pyyaml jinja2 pydantic fastapi uvicorn httpx
 ```
 
-浏览器打开 http://localhost:5173
+若使用真实 LLM，需额外安装对应 SDK：
+```bash
+# Anthropic
+pip install anthropic
 
-### 预设包一览
+# OpenAI 或兼容服务
+pip install openai
+```
+
+**前端依赖**
+```bash
+cd frontend && npm install && cd ..
+```
+
+### 2. 配置：Stub 模式 vs 真实 LLM
+
+系统默认运行在 **Stub 模式**（离线、无需 API Key、返回确定性假数据），适合测试和 CI。
+
+要切换到 **真实 LLM**，有两种方式：
+
+#### 方式 A：修改 `config/defaults.yaml`
+将 `models.api_provider` 改为 `openrouter`、`anthropic` 或 `openai_compatible`：
+
+```yaml
+models:
+  api_provider: "openrouter"   # 或 anthropic / openai_compatible
+  router_model: "anthropic/claude-opus-4-6"
+  chairman_model: "anthropic/claude-opus-4-6"
+  default_review_models:
+    - "anthropic/claude-sonnet-4-6"
+    - "openai/gpt-5.1"
+```
+
+#### 方式 B：环境变量强制覆盖
+```bash
+export ETHICS_COUNCIL_LLM=stub      # 强制使用 stub
+export ETHICS_COUNCIL_LLM=real      # 使用配置文件中指定的 provider
+```
+
+#### API Key 配置
+在项目根目录创建 `.env` 文件（或在 shell 中 export）：
+
+```bash
+# OpenRouter
+OPENROUTER_API_KEY=sk-or-v1-...
+
+# Anthropic
+ANTHROPIC_API_KEY=sk-ant-...
+
+# OpenAI / 兼容服务商
+OPENAI_API_KEY=sk-...
+OPENAI_BASE_URL=https://api.openai.com/v1   # 可选，用于自定义端点
+```
+
+### 3. 运行 Web 应用
+
+```bash
+./start.sh
+```
+
+启动后：
+- 后端地址：http://localhost:8001
+- 前端地址：http://localhost:5173
+
+**Web 端使用流程：**
+1. **提交项目** — 填写结构化表单（项目名称、负责人、研究描述、方法学，以及是否涉及人类受试者、基因编辑等 9 个标志位）。
+2. **专家选择** — 查看 Stage 0 路由结果，包括入选专家、推荐理由、风险等级、跨域议题簇。可手动调整专家勾选后确认。
+3. **审查进度** — 通过 SSE 实时流观看 Stage 1-3 的执行过程。每个专家的交叉验证细节、每个议题簇的讨论结果都可展开查看。
+4. **最终报告** — 查看主席生成的结构化意见书，可下载完整 JSON 或查看原始审议日志。
+
+### 4. 使用 REST API
+
+#### 查看所有预设
+```bash
+curl http://localhost:8001/api/presets
+```
+
+#### 提交项目（执行 Stage 0 路由）
+```bash
+curl -X POST http://localhost:8001/api/reviews \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_material": {
+      "project_title": "基于CRISPR-Cas9的基因治疗临床前研究",
+      "principal_investigator": "张博士",
+      "research_description": "利用CRISPR-Cas9治疗镰状细胞贫血症的小鼠模型研究。",
+      "methodology": "通过慢病毒载体递送CRISPR组件至造血干细胞。",
+      "involves_gene_editing": true,
+      "involves_animals": true
+    },
+    "preset": "life-sciences"
+  }'
+```
+返回包含 `review_id` 和 `_routing` 路由结果。
+
+#### 确认并运行完整审查（同步接口）
+```bash
+curl -X POST http://localhost:8001/api/reviews/{review_id}/confirm \
+  -H "Content-Type: application/json" \
+  -d '{
+    "experts_selected": [{"id": "gene_editing", "name": "...", "reason": "..."}],
+    "context_clusters": [{"topic": "...", "participants": ["..."], "reason": "..."}]
+  }'
+```
+
+#### 确认并运行完整审查（SSE 流式接口，推荐）
+```bash
+curl -X POST http://localhost:8001/api/reviews/{review_id}/confirm/stream \
+  -H "Content-Type: application/json" \
+  -d '{
+    "experts_selected": [...],
+    "context_clusters": [...]
+  }'
+```
+事件以 `data: {...}\n\n` 格式逐行推送。
+
+#### 列出所有审查记录
+```bash
+curl http://localhost:8001/api/reviews
+```
+
+#### 获取单条审查详情
+```bash
+curl http://localhost:8001/api/reviews/{review_id}
+```
+
+#### 删除审查记录
+```bash
+curl -X DELETE http://localhost:8001/api/reviews/{review_id}
+```
+
+### 5. 使用 CLI
+
+```bash
+# 默认 stub 模式
+python3 main.py examples/example_project_genomics.json --preset life-sciences
+
+# 使用 OpenRouter 真实模型
+export OPENROUTER_API_KEY=sk-or-v1-...
+python3 main.py examples/example_project_genomics.json --preset life-sciences --provider openrouter
+
+# 输出到文件
+python3 main.py examples/example_project_genomics.json --preset ai-ethics -o result.json
+```
+
+### 6. 如何解读输出 JSON
+
+最终报告 JSON 包含以下关键字段：
+
+| 字段 | 含义 |
+|------|------|
+| `project_name` | 从输入提取的项目名称 |
+| `risk_level` | 风险等级：`standard`（标准）/ `elevated`（升高）/ `high`（高） |
+| `overall_conclusion` | 整体结论：`approved`（通过）/ `conditional`（附条件）/ `rejected`（不通过） |
+| `conclusion_rationale` | 结论理由的自然语言说明 |
+| `domain_assessments` | 各领域的评估详情，含关键风险点与建议 |
+| `cross_domain_findings` | 仅在多领域交叉处浮现的风险与建议 |
+| `unresolved_divergences` | 各领域之间的分歧，主席记录但不强行消除 |
+| `priority_actions` | 优先级行动项：P0=必须修改，P1=强烈建议，P2=建议 |
+| `chairman_notes` | 主席的自由格式综合评语 |
+| `_deliberation_log` | Stage 1 和 Stage 2 的完整原始输出，可供审计回溯 |
+| `_routing` | Stage 0 输出：入选专家、未入选专家、风险标记 |
+
+### 7. 添加自定义预设或专家
+
+**新建预设目录结构：**
+```
+presets/my-domain/
+├── preset.yaml
+├── experts/
+│   ├── expert_a.yaml
+│   └── expert_b.yaml
+└── cross_domain_templates.yaml
+```
+
+复制任意现有预设（如 `ai-ethics`）作为模板，然后修改：
+- `experts/*.yaml` — 定义专家的审查维度、法规知识、触发条件、`system_prompt`
+- `cross_domain_templates.yaml` — 定义哪些专家应就哪些跨域议题进行讨论
+- `preset.yaml` — 元数据与专家文件列表
+
+**无需修改任何代码**。新预设会自动出现在 `/api/presets`、CLI 和前端下拉框中。
+
+### 8. 常见问题排查
+
+| 问题 | 解决方案 |
+|------|----------|
+| LLM client 报 `NotImplementedError` | 请安装对应 SDK（`anthropic` 或 `openai`）并正确设置 API Key。 |
+| 已配置真实 provider 但仍返回 stub 数据 | 检查是否误设了 `ETHICS_COUNCIL_LLM=stub` 环境变量，取消 export 即可。 |
+| 后端提示 preset 找不到 | 检查 `presets_dir` 路径，确保预设目录下包含 `preset.yaml` 和至少一个专家 YAML。 |
+| 前端无法连接后端 | 检查 `backend/main.py` 中的 CORS 配置，确保后端已启动在 8001 端口。 |
+| 真实 LLM 返回的 JSON 解析失败 | 降低 `temperature` 至 0.2-0.3，低温下模型输出结构化 JSON 更稳定。 |
+| Stage 3 stub 被误识别为 Stage 1 | 已修复。若自定义分支遇到类似问题，请在 `engine/llm_client.py` 中确保 Stage 3 优先检测，因为它的 prompt 嵌入了前面阶段的 JSON。 |
+
+---
+
+## 预设包一览
 
 | 预设 | 领域 | 专家数 | 典型场景 |
 |------|------|--------|----------|
@@ -178,7 +554,7 @@ cd frontend && npm install && cd ..
 | `social-science` | 社会科学 | 6 | 问卷调查、弱势群体研究 |
 | `clinical-trial` | 临床试验 | 6 | 药物试验、医疗器械 |
 
-### 技术栈
+## 技术栈
 
 - **引擎层**：Python 3.10+, asyncio, Pydantic v2, Jinja2
 - **后端**：FastAPI, SSE (Server-Sent Events) 实时流式进度

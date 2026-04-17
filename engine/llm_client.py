@@ -300,30 +300,111 @@ def _stub_chairman(user_prompt: str) -> Dict[str, Any]:
     }
 
 
-# ---------- Real-provider skeletons (not wired) ----------
+# ---------- Real-provider implementations ----------
 
 class OpenRouterLLMClient(BaseLLMClient):
     provider_name = "openrouter"
 
     async def query(self, model, system_prompt, user_prompt, *, temperature=None):
-        raise NotImplementedError(
-            "OpenRouter client not wired yet. See backend/openrouter.py in the "
-            "llm-council base for a reference implementation to port over."
-        )
+        import httpx
+
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        if not api_key:
+            raise RuntimeError("OPENROUTER_API_KEY environment variable is required")
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": user_prompt})
+
+        payload = {
+            "model": model,
+            "messages": messages,
+            "temperature": temperature if temperature is not None else self.temperature,
+        }
+
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            resp = await client.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers=headers,
+                json=payload,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            message = data["choices"][0]["message"]
+            content = message.get("content", "")
+            return LLMResponse(
+                model=model,
+                content=content,
+                raw=data,
+            )
 
 
 class AnthropicLLMClient(BaseLLMClient):
     provider_name = "anthropic"
 
     async def query(self, model, system_prompt, user_prompt, *, temperature=None):
-        raise NotImplementedError("Anthropic direct client not wired yet.")
+        try:
+            from anthropic import AsyncAnthropic
+        except ImportError as e:
+            raise ImportError("anthropic package is required. Run: pip install anthropic") from e
+
+        api_key = os.getenv("ANTHROPIC_API_KEY")
+        if not api_key:
+            raise RuntimeError("ANTHROPIC_API_KEY environment variable is required")
+
+        client = AsyncAnthropic(api_key=api_key)
+        resp = await client.messages.create(
+            model=model,
+            max_tokens=4096,
+            temperature=temperature if temperature is not None else self.temperature,
+            system=system_prompt or "",
+            messages=[{"role": "user", "content": user_prompt}],
+        )
+        content = "".join(block.text for block in resp.content if hasattr(block, "text"))
+        return LLMResponse(
+            model=model,
+            content=content,
+            raw=resp.model_dump(),
+        )
 
 
 class OpenAICompatibleLLMClient(BaseLLMClient):
     provider_name = "openai_compatible"
 
     async def query(self, model, system_prompt, user_prompt, *, temperature=None):
-        raise NotImplementedError("OpenAI-compatible client not wired yet.")
+        try:
+            from openai import AsyncOpenAI
+        except ImportError as e:
+            raise ImportError("openai package is required. Run: pip install openai") from e
+
+        api_key = os.getenv("OPENAI_API_KEY")
+        base_url = os.getenv("OPENAI_BASE_URL")
+        if not api_key:
+            raise RuntimeError("OPENAI_API_KEY environment variable is required")
+
+        client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": user_prompt})
+
+        resp = await client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=temperature if temperature is not None else self.temperature,
+            timeout=self.timeout,
+        )
+        content = resp.choices[0].message.content or ""
+        return LLMResponse(
+            model=model,
+            content=content,
+            raw=resp.model_dump(),
+        )
 
 
 # ---------- Factory ----------

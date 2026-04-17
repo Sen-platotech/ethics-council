@@ -1,0 +1,22 @@
+{
+  "project_title": "基于CRISPR-Cas9的镰刀型细胞贫血症基因治疗临床前研究",
+  "principal_investigator": "张三",
+  "department": "基因组医学研究中心",
+  "project_type": "basic_research",
+  "research_description": "本项目拟利用CRISPR-Cas9基因编辑技术，靶向BCL11A基因的红系增强子区域，在患者来源的CD34+造血干细胞中恢复胎儿血红蛋白（HbF）的表达，以评估其作为镰刀型细胞贫血症基因治疗策略的可行性和安全性。研究将在体外细胞和小鼠移植模型中完成，不涉及人体试验。",
+  "methodology": "1. 从3名镰刀型细胞贫血症患者外周血中分离CD34+造血干细胞（知情同意后）\n2. 使用电穿孔法递送Cas9 RNP复合物，靶向BCL11A增强子\n3. 体外红系分化评估HbF表达恢复效率\n4. 脱靶效应分析（GUIDE-seq + Digenome-seq）\n5. 编辑后细胞移植至NSG免疫缺陷小鼠（n=30），评估造血重建与长期安全性\n6. 16周后处死小鼠，分析编辑效率维持、脱靶突变积累和肿瘤发生风险",
+  "data_management_plan": "所有基因组数据存储于机构内部加密服务器，不外传。患者来源样本经去标识化处理后使用。数据保存期限为项目结束后5年。",
+  "funding_source": "国家自然科学基金面上项目（批准号：32171xxx）",
+  "conflict_of_interest_declaration": "项目负责人声明无利益冲突",
+  "estimated_sample_size": "3名患者的外周血样本；30只NSG小鼠",
+  "study_duration": "2年",
+  "involves_human_subjects": false,
+  "involves_human_genetic_resources": true,
+  "involves_animals": true,
+  "involves_gene_editing": true,
+  "involves_synthetic_biology": false,
+  "involves_environmental_release": false,
+  "involves_international_collaboration": false,
+  "involves_vulnerable_populations": false,
+  "involves_ai_systems": false
+}

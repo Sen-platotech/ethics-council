@@ -1,0 +1,26 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Stage 2 Cross-Domain Discussion Output"
+type: object
+required: [context_topic, participants, expert_outputs]
+properties:
+  context_topic: { type: string }
+  participants:  { type: array, items: { type: string } }
+  rounds_run:    { type: integer, minimum: 1 }
+  consensus_reached: { type: boolean }
+  expert_outputs:
+    type: array
+    items:
+      type: object
+      required: [context_topic, my_domain]
+      properties:
+        context_topic: { type: string }
+        my_domain:     { type: string }
+        cross_domain_risks:
+          type: array
+          items: { type: object }
+        supplements_to_others:
+          type: array
+          items: { type: object }
+        collaborative_recommendations:
+          type: array
+          items: { type: string }

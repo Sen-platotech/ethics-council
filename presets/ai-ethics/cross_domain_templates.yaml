@@ -1,0 +1,42 @@
+cross_domain_templates:
+  - topic: "公平性审计中的数据隐私冲突"
+    participants: ["algorithmic_fairness", "data_privacy"]
+    typical_triggers:
+      - "需要收集受保护属性数据进行公平性检测"
+      - "去标识化限制了偏差检测能力"
+
+  - topic: "模型透明度与隐私保护的平衡"
+    participants: ["transparency", "data_privacy"]
+    typical_triggers:
+      - "可解释性方法可能暴露训练数据隐私"
+      - "模型审计需要访问敏感数据"
+
+  - topic: "AI安全机制的透明度与可审计性"
+    participants: ["safety_alignment", "transparency"]
+    typical_triggers:
+      - "对齐和安全过滤机制的可解释性需求"
+      - "红队测试结果的披露范围"
+
+  - topic: "算法偏差的社会结构性影响"
+    participants: ["algorithmic_fairness", "social_impact"]
+    typical_triggers:
+      - "AI系统部署在就业、信贷、司法等高影响领域"
+      - "算法决策对弱势群体产生差异化影响"
+
+  - topic: "AI安全失败的社会级联效应"
+    participants: ["safety_alignment", "social_impact"]
+    typical_triggers:
+      - "大规模部署的AI系统存在系统性故障风险"
+      - "AI系统影响关键基础设施"
+
+  - topic: "AI系统的多法域合规"
+    participants: ["legal_compliance", "data_privacy"]
+    typical_triggers:
+      - "AI服务面向多个国家/地区用户"
+      - "训练数据涉及跨境传输"
+
+  - topic: "AI事故的责任归属与社会救济"
+    participants: ["legal_compliance", "social_impact", "safety_alignment"]
+    typical_triggers:
+      - "自动化决策导致用户权益受损"
+      - "AI系统在关键领域的安全事故"

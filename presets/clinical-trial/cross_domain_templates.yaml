@@ -1,0 +1,42 @@
+cross_domain_templates:
+  - topic: "方案设计与统计方法的协同审查"
+    participants: ["protocol_design", "biostatistics"]
+    typical_triggers:
+      - "适应性设计或贝叶斯方法的临床试验"
+      - "样本量计算参数存在较大不确定性"
+
+  - topic: "安全性终点的设计与监测方案"
+    participants: ["protocol_design", "safety_monitoring"]
+    typical_triggers:
+      - "首次人体试验（First-in-Human）"
+      - "已知安全性风险较高的药物/疗法"
+
+  - topic: "弱势群体的知情同意特殊要求"
+    participants: ["informed_consent", "vulnerable_subjects"]
+    typical_triggers:
+      - "涉及儿童、认知障碍者或紧急情况下的临床试验"
+      - "法定代理人同意与受试者意愿表达的协调"
+
+  - topic: "中期分析的统计与安全双重考量"
+    participants: ["biostatistics", "safety_monitoring"]
+    typical_triggers:
+      - "设有DSMB的试验"
+      - "涉及疗效与安全性双重中期分析"
+
+  - topic: "知情同意与方案变更的联动管理"
+    participants: ["informed_consent", "protocol_design", "regulatory_affairs"]
+    typical_triggers:
+      - "重大方案修正（substantial amendment）"
+      - "新安全性信息的受试者通报"
+
+  - topic: "国际多中心试验的法规协调"
+    participants: ["regulatory_affairs", "protocol_design"]
+    typical_triggers:
+      - "涉及多国监管机构审批的国际合作试验"
+      - "不同法域的GCP标准差异"
+
+  - topic: "弱势受试者的安全性强化监测"
+    participants: ["vulnerable_subjects", "safety_monitoring"]
+    typical_triggers:
+      - "儿科或老年人群的I期试验"
+      - "弱势群体的特殊不良反应监测"

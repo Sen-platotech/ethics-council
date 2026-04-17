@@ -1,0 +1,8 @@
+preset:
+  id: "life-sciences"
+  name:
+    zh: "生命科学伦理审查预设包"
+    en: "Life Sciences Ethics Review Preset"
+  description: "覆盖人类受试者、动物、生物安全、基因编辑、数据隐私、环境、科研诚信和法律合规八大领域"
+  domain: "life_sciences"
+  version: "1.0"

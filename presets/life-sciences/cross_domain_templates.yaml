@@ -1,0 +1,44 @@
+cross_domain_templates:
+  - topic: "基因组数据的采集、存储与共享"
+    participants: ["human_subjects", "data_privacy"]
+    typical_triggers:
+      - "涉及人群队列基因测序"
+      - "涉及基因组数据的跨机构/跨境共享"
+
+  - topic: "基因编辑技术的生物安全性"
+    participants: ["biosafety", "gene_editing"]
+    typical_triggers:
+      - "涉及CRISPR等基因编辑技术"
+      - "涉及基因驱动"
+
+  - topic: "转基因/合成生物体的环境释放风险"
+    participants: ["biosafety", "environmental"]
+    typical_triggers:
+      - "涉及GMO田间试验或环境释放"
+      - "涉及合成微生物的环境应用"
+
+  - topic: "动物模型中的基因编辑伦理"
+    participants: ["animal_ethics", "gene_editing"]
+    typical_triggers:
+      - "涉及基因编辑动物模型的构建"
+
+  - topic: "弱势群体数据的特殊保护"
+    participants: ["human_subjects", "data_privacy", "legal_compliance"]
+    typical_triggers:
+      - "涉及儿童/患者/精神障碍者的基因检测"
+
+  - topic: "合成生物体的多维度风险评估"
+    participants: ["gene_editing", "environmental", "biosafety"]
+    typical_triggers:
+      - "涉及合成基因组学或人工生命体"
+
+  - topic: "跨境合作中的法规冲突"
+    participants: ["data_privacy", "legal_compliance"]
+    typical_triggers:
+      - "涉及国际合作项目的数据传输"
+      - "涉及多国多中心研究"
+
+  - topic: "研究成果的双重用途风险"
+    participants: ["biosafety", "research_integrity"]
+    typical_triggers:
+      - "涉及潜在的DURC（双重用途关注研究）"

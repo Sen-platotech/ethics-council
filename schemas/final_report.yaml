@@ -1,0 +1,46 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Final Ethics Review Report"
+type: object
+required: [project_name, review_date, overall_conclusion, chairman_notes]
+properties:
+  project_name:           { type: string }
+  review_date:            { type: string }
+  risk_level:             { type: string, enum: [standard, elevated, high] }
+  overall_conclusion:
+    type: string
+    enum: [approved, conditional, rejected]
+  conclusion_rationale:   { type: string }
+  domain_assessments:
+    type: array
+    items:
+      type: object
+      required: [domain, assessment]
+      properties:
+        domain:          { type: string }
+        assessment:      { type: string, enum: [approved, conditional, rejected] }
+        key_risks:       { type: array, items: { type: object } }
+        recommendations: { type: array, items: { type: string } }
+  cross_domain_findings:
+    type: array
+    items:
+      type: object
+      properties:
+        topic:             { type: string }
+        finding:           { type: string }
+        involved_domains:  { type: array, items: { type: string } }
+        recommendation:    { type: string }
+  unresolved_divergences:
+    type: array
+    items: { type: object }
+  priority_actions:
+    type: array
+    items:
+      type: object
+      required: [priority, action]
+      properties:
+        priority:            { type: string, enum: [P0, P1, P2] }
+        action:              { type: string }
+        responsible_domain:  { type: string }
+        deadline_suggestion: { type: string }
+  chairman_notes: { type: string }
+additionalProperties: true

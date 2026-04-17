@@ -1,0 +1,10 @@
+preset:
+  id: "ai-ethics"
+  name:
+    zh: "AI伦理审查"
+    en: "AI Ethics Review"
+  description:
+    zh: "针对人工智能系统研发与部署的伦理审查预设，覆盖算法公平性、数据隐私、透明度、安全对齐、社会影响和法律合规"
+    en: "Ethics review preset for AI system development and deployment, covering algorithmic fairness, data privacy, transparency, safety alignment, social impact, and legal compliance"
+  domain: "ai_ethics"
+  version: "1.0"

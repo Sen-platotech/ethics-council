@@ -1,0 +1,22 @@
+{
+  "project_title": "基于大语言模型的医疗影像辅助诊断系统部署评估",
+  "principal_investigator": "李四",
+  "department": "人工智能与医学交叉研究中心",
+  "project_type": "applied_research",
+  "research_description": "本项目拟部署一套基于大语言模型（LLM）和视觉编码器的医疗影像辅助诊断系统，用于胸部X光片的肺结节初筛。系统将作为放射科医师的辅助工具部署在3家合作医院的PACS系统中，进行为期6个月的前瞻性评估。系统不直接做出临床决策，但其建议将呈现给医师参考。评估重点包括诊断准确率、假阳性率、医师采纳率以及患者满意度。",
+  "methodology": "1. 使用已训练完成的ViT-LLM多模态模型（基于10万张标注胸片训练）\n2. 在3家医院部署AI辅助系统，嵌入PACS工作流\n3. 前瞻性收集6个月内的诊断数据\n4. 同步收集放射科医师对系统建议的采纳情况\n5. 通过问卷调查评估患者对AI辅助诊断的知晓度和接受度\n6. 对比AI辅助前后的诊断效率和准确率",
+  "data_management_plan": "所有影像数据在院内处理，不出院区。患者数据经脱敏处理后用于研究分析。模型推理在院内GPU服务器完成，不使用云端API。",
+  "funding_source": "科技部重点研发计划（2024YFCxxxx）",
+  "conflict_of_interest_declaration": "项目负责人为系统开发方技术顾问，已向伦理委员会披露",
+  "estimated_sample_size": "预计纳入约5000例胸片检查",
+  "study_duration": "1年（含6个月部署评估期）",
+  "involves_human_subjects": true,
+  "involves_human_genetic_resources": false,
+  "involves_animals": false,
+  "involves_gene_editing": false,
+  "involves_synthetic_biology": false,
+  "involves_environmental_release": false,
+  "involves_international_collaboration": false,
+  "involves_vulnerable_populations": false,
+  "involves_ai_systems": true
+}

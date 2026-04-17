@@ -1,0 +1,39 @@
+# Stage 1 — Domain expert review (first pass)
+# System prompt is assembled separately from the expert's own system_prompt
+# field plus the ethical_framework preamble; only the user message is here.
+# Variables:
+#   project_material : str
+
+user: |
+  请对以下研究项目进行你所负责领域的伦理审查。
+
+  审查要求：
+  - 逐项检查你的审查维度，识别潜在的伦理风险
+  - 对每个风险点给出严重性评级（high/medium/low）
+  - 引用具体的法规或准则条款作为依据
+  - 给出具体且可执行的修改建议
+  - 如果项目材料中的信息不足以做出判断，明确指出需要补充的信息
+
+  严格按照以下JSON格式输出（除此之外不要输出任何内容）：
+  {
+    "expert_domain": "你的专家领域名称",
+    "risk_items": [
+      {
+        "risk_id": "R1",
+        "description": "具体的风险描述",
+        "severity": "high",
+        "regulatory_basis": "引用的具体法规条款",
+        "recommendation": "具体的修改建议",
+        "info_sufficient": true
+      }
+    ],
+    "missing_information": [
+      "需要研究者补充提供的信息（如有）"
+    ],
+    "overall_assessment": "approved",
+    "confidence": 0.85,
+    "key_concerns_summary": "不超过200字的核心关切摘要（此摘要将作为中继信息传递给其他阶段）"
+  }
+
+  === 项目申报材料 ===
+  {{ project_material }}

@@ -1,0 +1,32 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Stage 0 Routing Output"
+type: object
+required: [experts_selected, context_clusters, risk_level]
+properties:
+  experts_selected:
+    type: array
+    items:
+      type: object
+      required: [id, name, reason]
+      properties:
+        id:     { type: string }
+        name:   { type: string }
+        reason: { type: string }
+  context_clusters:
+    type: array
+    items:
+      type: object
+      required: [topic, participants]
+      properties:
+        topic:        { type: string }
+        participants: { type: array, items: { type: string }, minItems: 2 }
+        reason:       { type: string }
+  experts_not_needed:
+    type: array
+    items: { type: object }
+  high_risk_flags:
+    type: array
+    items: { type: string }
+  risk_level:
+    type: string
+    enum: [standard, elevated, high]

@@ -1,0 +1,10 @@
+preset:
+  id: "social-science"
+  name:
+    zh: "社会科学伦理审查"
+    en: "Social Science Ethics Review"
+  description:
+    zh: "针对社会科学研究的伦理审查预设，覆盖调查研究伦理、弱势群体保护、文化敏感性、数据治理、研究设计规范和机构伦理"
+    en: "Ethics review preset for social science research, covering survey ethics, vulnerable populations, cultural sensitivity, data governance, research design, and institutional ethics"
+  domain: "social_science"
+  version: "1.0"

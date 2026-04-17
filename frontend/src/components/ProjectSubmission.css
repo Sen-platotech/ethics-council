@@ -1,0 +1,105 @@
+.project-submission {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.project-submission h2 {
+  font-size: 22px;
+  margin: 0 0 4px 0;
+}
+
+.project-submission .subtitle {
+  color: #666;
+  font-size: 13px;
+  margin: 0 0 24px 0;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #444;
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.flags-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.flag-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: normal;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.flag-checkbox:hover {
+  background: #f1f3f4;
+}
+
+.flag-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.optional-fields {
+  margin-bottom: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.optional-fields summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: #1a73e8;
+  font-size: 14px;
+}
+
+.optional-fields[open] summary {
+  margin-bottom: 12px;
+}

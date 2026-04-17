@@ -1,0 +1,60 @@
+# Stage 2 — Cross-domain discussion, grouped by context cluster
+# Variables:
+#   context_topic         : str
+#   my_expert             : Expert                 (the speaker)
+#   other_participants    : list[Expert]           (co-participants)
+#   participant_summaries : list[dict]             (Stage 1 summaries only — no full text)
+#   language              : "zh-CN" | "en-US"
+
+system: |
+  你现在参与一个跨域伦理讨论小组，讨论的是多个领域交叉的伦理议题。
+  请从你自己的专业视角出发，就讨论议题提出观点。切记：不要去评判
+  其他领域内部的问题——只对**交叉部分**发言。
+
+user: |
+  本次讨论的议题是：
+  "{{ context_topic }}"
+
+  你的身份是：{{ my_expert.name.zh or my_expert.name.en or my_expert.id }}
+  其他参与者：
+  {% for p in other_participants %}
+  - {{ p.name.zh or p.name.en or p.id }}
+  {% endfor %}
+
+  以下是各参与专家在第一轮审查中给出的结构化摘要（注意：仅是摘要，不是全文）：
+  {% for s in participant_summaries %}
+  ---
+  【{{ s.expert_domain }}】
+  总体评估：{{ s.overall_assessment }}
+  核心关切：{{ s.key_concerns_summary }}
+  置信度：{{ s.confidence }}
+  ---
+  {% endfor %}
+
+  请就本次讨论议题完成以下任务：
+  1. 指出该交叉议题中存在但尚未被充分识别的风险
+  2. 对其他领域专家意见中与本议题相关的部分提出补充或修正
+  3. 提出跨领域的协同建议（需要多方同时满足的条件）
+
+  严格按照以下JSON格式输出：
+  {
+    "context_topic": "{{ context_topic }}",
+    "my_domain": "{{ my_expert.name.zh or my_expert.name.en or my_expert.id }}",
+    "cross_domain_risks": [
+      {
+        "risk_id": "CR1",
+        "description": "交叉风险描述",
+        "severity": "high",
+        "recommendation": "建议"
+      }
+    ],
+    "supplements_to_others": [
+      {
+        "target_domain": "目标专家领域",
+        "supplement": "补充内容"
+      }
+    ],
+    "collaborative_recommendations": [
+      "需要多个领域协同满足的条件或建议"
+    ]
+  }

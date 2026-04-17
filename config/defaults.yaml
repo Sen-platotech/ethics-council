@@ -1,0 +1,87 @@
+# =============================================================
+# Ethics Council — Global default configuration (council.yaml)
+# =============================================================
+# Any field can be overridden by a user-provided config file
+# passed to `ConfigLoader.load(...)`. Preset packages may also
+# override the `ethical_framework` section.
+# =============================================================
+
+council:
+  name: "Ethics Review Council"
+  language: "zh-CN"
+  version: "1.0"
+
+# ---------- Ethical framework (universal meta-rules) ----------
+# Injected as a preamble into every expert's system prompt.
+ethical_framework:
+  principles:
+    - name: "尊重人"
+      description: "尊重个体自主决策的权利，保护脆弱群体"
+      source: "Belmont Report / 赫尔辛基宣言"
+    - name: "有益"
+      description: "最大化受益，最小化可预见的风险"
+      source: "Belmont Report"
+    - name: "公正"
+      description: "公平分配研究的负担和收益"
+      source: "Belmont Report"
+    - name: "尊重生命"
+      description: "尊重生命的尊严、价值和多样性"
+      source: "《科技伦理审查办法（试行）》第三条"
+    - name: "增进人类福祉"
+      description: "研究应服务于增进人类福祉和社会可持续发展"
+      source: "《科技伦理审查办法（试行）》第三条"
+
+  universal_review_criteria:
+    - "研究是否具有科学价值和社会价值"
+    - "研究人员资质、研究基础及设施条件是否满足要求"
+    - "风险受益比是否合理"
+    - "伦理风险控制方案及应急预案是否科学恰当、具有可操作性"
+    - "是否存在利益冲突"
+    - "是否涉及需要开展专家复核的高风险科技活动"
+
+  high_risk_checklist:
+    - "对人类生命健康、价值理念、生态环境等具有重大影响的新物种合成研究"
+    - "将人干细胞导入动物胚胎或胎儿并进一步在动物子宫中孕育成个体的相关研究"
+    - "改变人类生殖细胞、受精卵和着床前胚胎细胞核遗传物质或遗传规律的基础研究"
+    - "侵入式脑机接口用于神经、精神类疾病治疗的临床研究"
+    - "对人类主观行为、心理情绪和生命健康等具有较强影响的人机融合系统的研发"
+
+# ---------- Model configuration ----------
+models:
+  router_model: "claude-opus-4-6"
+  chairman_model: "claude-opus-4-6"
+  default_review_models:
+    - "claude-sonnet-4-6"
+    - "glm-5-1"
+  max_models_per_domain: 3
+  min_models_per_domain: 2
+
+  # LLM API provider. The stub client ignores this and returns
+  # deterministic fake outputs keyed by stage/model. Set
+  # ETHICS_COUNCIL_LLM=real to switch to real providers after
+  # wiring in api keys.
+  api_provider: "stub"           # stub / openrouter / anthropic / openai_compatible
+  temperature: 0.3
+  request_timeout: 120.0
+
+# ---------- Pipeline configuration ----------
+pipeline:
+  enable_stage0_routing: true
+  enable_cross_domain_discussion: true
+  enable_early_stopping: true
+  max_discussion_rounds: 2
+  summary_relay: true
+  summary_max_tokens: 500
+
+  diversity_check:
+    enabled: true
+    min_experts: 3
+    require_ethics_expert: false
+    require_legal_expert: true
+
+# ---------- Output configuration ----------
+output:
+  format: "json"
+  include_deliberation_log: true
+  include_divergences: true
+  language: "zh-CN"

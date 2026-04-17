@@ -1,0 +1,196 @@
+.review-progress {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.review-progress h2 {
+  font-size: 22px;
+  margin: 0 0 20px 0;
+}
+
+.stage-block {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  background: #fafafa;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.stage-block.active {
+  border-color: #a0c4ff;
+  background: #f0f6ff;
+}
+
+.stage-block.complete {
+  border-color: #81c784;
+  background: #f1f8e9;
+}
+
+.stage-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.stage-header h3 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.stage-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.stage-block.active .stage-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.stage-block.complete .stage-icon {
+  color: #2e7d32;
+  animation: none;
+}
+
+/* Expert progress */
+.expert-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.expert-progress-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.expert-progress-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.expert-progress-header:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.expert-progress-item.done {
+  border-color: #c8e6c9;
+}
+
+.expert-progress-item.running {
+  border-color: #bbdefb;
+}
+
+.expert-status-dot {
+  font-size: 14px;
+}
+
+.expert-progress-item.done .expert-status-dot { color: #2e7d32; }
+.expert-progress-item.running .expert-status-dot {
+  color: #1a73e8;
+  animation: spin 1s linear infinite;
+}
+
+.expert-label {
+  flex: 1;
+  font-weight: 500;
+}
+
+.assessment-badge {
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.assessment-approved { background: #c8e6c9; color: #1b5e20; }
+.assessment-conditional { background: #fff9c4; color: #f57f17; }
+.assessment-rejected { background: #ffcdd2; color: #b71c1c; }
+
+/* Expert detail panel */
+.expert-detail-panel {
+  padding: 12px 16px;
+  background: #f9f9f9;
+  border-top: 1px solid #e0e0e0;
+  font-size: 13px;
+}
+
+.detail-section {
+  margin-bottom: 12px;
+}
+
+.detail-section h4 {
+  font-size: 13px;
+  margin: 0 0 6px 0;
+  color: #333;
+}
+
+.detail-section summary {
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 12px;
+  color: #1a73e8;
+  margin-bottom: 6px;
+}
+
+.detail-section pre {
+  font-size: 11px;
+  background: #f1f3f4;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Cluster progress */
+.cluster-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cluster-progress-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.cluster-progress-item.done {
+  border-color: #c8e6c9;
+}
+
+.cluster-done-label {
+  margin-left: auto;
+  font-size: 11px;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.stage-loading {
+  color: #666;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.progress-footer {
+  text-align: center;
+  padding: 16px;
+  color: #666;
+  font-size: 13px;
+}

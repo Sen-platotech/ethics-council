@@ -1,0 +1,29 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Stage 1 Domain Review Output"
+type: object
+required: [expert_domain, risk_items, overall_assessment, confidence, key_concerns_summary]
+properties:
+  expert_domain: { type: string }
+  risk_items:
+    type: array
+    items:
+      type: object
+      required: [risk_id, description, severity, recommendation]
+      properties:
+        risk_id:          { type: string }
+        description:      { type: string }
+        severity:         { type: string, enum: [low, medium, high] }
+        regulatory_basis: { type: string }
+        recommendation:   { type: string }
+        info_sufficient:  { type: boolean }
+  missing_information:
+    type: array
+    items: { type: string }
+  overall_assessment:
+    type: string
+    enum: [approved, conditional, rejected]
+  confidence: { type: number, minimum: 0, maximum: 1 }
+  key_concerns_summary: { type: string }
+  divergences:
+    type: array
+    items: { type: object }

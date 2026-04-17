@@ -1,0 +1,10 @@
+preset:
+  id: "clinical-trial"
+  name:
+    zh: "临床试验伦理审查"
+    en: "Clinical Trial Ethics Review"
+  description:
+    zh: "针对药物/器械/疗法临床试验的伦理审查预设，覆盖方案设计、知情同意、安全监测、法规事务、生物统计和弱势受试者保护"
+    en: "Ethics review preset for drug/device/therapy clinical trials, covering protocol design, informed consent, safety monitoring, regulatory affairs, biostatistics, and vulnerable subjects protection"
+  domain: "clinical_trial"
+  version: "1.0"

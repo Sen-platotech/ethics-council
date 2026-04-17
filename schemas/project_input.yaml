@@ -1,0 +1,43 @@
+# JSON Schema for project application input.
+# Validated by backend/api before invoking the pipeline.
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Project Application Input"
+type: object
+required:
+  - project_title
+  - principal_investigator
+  - research_description
+  - methodology
+properties:
+  project_title:        { type: string }
+  principal_investigator: { type: string }
+  department:           { type: string }
+  project_type:
+    type: string
+    enum: ["basic_research", "applied_research", "tech_development", "clinical_trial"]
+  research_description:
+    type: string
+    maxLength: 3000
+  methodology:          { type: string }
+
+  # Ethics-related boolean flags (help Stage 0 routing).
+  involves_human_subjects:             { type: boolean, default: false }
+  involves_human_genetic_resources:    { type: boolean, default: false }
+  involves_animals:                    { type: boolean, default: false }
+  involves_gene_editing:               { type: boolean, default: false }
+  involves_synthetic_biology:          { type: boolean, default: false }
+  involves_environmental_release:      { type: boolean, default: false }
+  involves_international_collaboration:{ type: boolean, default: false }
+  involves_vulnerable_populations:     { type: boolean, default: false }
+  involves_ai_systems:                 { type: boolean, default: false }
+
+  # Supplementary info.
+  data_management_plan:            { type: string }
+  funding_source:                  { type: string }
+  conflict_of_interest_declaration:{ type: string }
+  estimated_sample_size:           { type: string }
+  study_duration:                  { type: string }
+  attachments:
+    type: array
+    items: { type: string }
+additionalProperties: true

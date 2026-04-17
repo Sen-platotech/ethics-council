@@ -1,0 +1,36 @@
+cross_domain_templates:
+  - topic: "弱势群体调查研究的特殊保护"
+    participants: ["survey_ethics", "vulnerable_populations"]
+    typical_triggers:
+      - "涉及未成年人、老年人或残障人士的问卷调查"
+      - "涉及受机构约束群体的访谈研究"
+
+  - topic: "跨文化研究中的知情同意与工具适配"
+    participants: ["survey_ethics", "cultural_sensitivity"]
+    typical_triggers:
+      - "涉及多民族或跨国比较研究"
+      - "研究工具需要跨文化翻译和适配"
+
+  - topic: "调查数据的隐私保护与开放共享"
+    participants: ["survey_ethics", "data_governance"]
+    typical_triggers:
+      - "涉及敏感话题（健康/收入/政治观点）的调查"
+      - "数据拟开放共享或二次使用"
+
+  - topic: "社区数据主权与文化遗产保护"
+    participants: ["cultural_sensitivity", "data_governance"]
+    typical_triggers:
+      - "涉及原住民社区的数据采集"
+      - "涉及传统知识的记录与数字化"
+
+  - topic: "不同文化背景下弱势群体的界定"
+    participants: ["vulnerable_populations", "cultural_sensitivity"]
+    typical_triggers:
+      - "跨文化研究中弱势群体定义的差异"
+      - "文化特有的脆弱性识别"
+
+  - topic: "多中心研究的伦理协调与设计规范"
+    participants: ["institutional_ethics", "research_design"]
+    typical_triggers:
+      - "涉及多机构/多地点的协作研究"
+      - "研究设计变更的伦理审查程序"

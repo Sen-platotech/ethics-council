@@ -1,0 +1,1 @@
+"""Ethics Council backend package."""
